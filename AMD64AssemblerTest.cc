@@ -315,40 +315,38 @@ void test_hash_fnv1a64() {
   CodeBuffer code;
 
   // this mirrors the implementation in notes/hash.s
-  as.write_mov(rdx, 0xCBF29CE484222325);
+  as.write_mov(rax, 0xCBF29CE484222325);
   as.write_add(rsi, rdi);
-  as.write_xor(rax, rax);
+  as.write_xor(rdx, rdx);
   as.write_mov(rcx, 0x00000100000001B3);
   as.write_jmp("check_end");
 
   as.write_label("continue");
-  as.write_mov(al, MemoryReference(rdi, 0), OperandSize::Byte);
-  as.write_xor(rdx, rax);
-  as.write_imul(rdx, rcx);
+  as.write_mov(dl, MemoryReference(rdi, 0), OperandSize::Byte);
+  as.write_xor(rax, rdx);
+  as.write_imul(rax, rcx);
   as.write_inc(rdi);
   as.write_label("check_end");
   as.write_cmp(rdi, rsi);
   as.write_jne("continue");
 
-  as.write_mov(rax, rdx);
   as.write_ret();
 
   const char* expected_disassembly = "\
-0000000000000000   48 BA 25 23 22 84 E4 9C F2 CB   movabs   rdx, 0xCBF29CE484222325\n\
+0000000000000000   48 B8 25 23 22 84 E4 9C F2 CB   movabs   rax, 0xCBF29CE484222325\n\
 000000000000000A   48 01 FE                        add      rsi, rdi\n\
-000000000000000D   48 31 C0                        xor      rax, rax\n\
+000000000000000D   48 31 D2                        xor      rdx, rdx\n\
 0000000000000010   48 B9 B3 01 00 00 00 01 00 00   movabs   rcx, 0x00000100000001B3\n\
 000000000000001A   EB 0C                           jmp      +0xC ; check_end\n\
 continue:\n\
-000000000000001C   8A 07                           mov      al, [rdi]\n\
-000000000000001E   48 31 C2                        xor      rdx, rax\n\
-0000000000000021   48 0F AF D1                     imul     rdx, rcx\n\
+000000000000001C   8A 17                           mov      dl, [rdi]\n\
+000000000000001E   48 31 D0                        xor      rax, rdx\n\
+0000000000000021   48 0F AF C1                     imul     rax, rcx\n\
 0000000000000025   48 FF C7                        inc      rdi\n\
 check_end:\n\
 0000000000000028   48 39 F7                        cmp      rdi, rsi\n\
 000000000000002B   75 EF                           jne      -0x11 ; continue\n\
-000000000000002D   48 89 D0                        mov      rax, rdx\n\
-0000000000000030   C3                              ret\n";
+000000000000002D   C3                              ret\n";
   void* function = assemble(code, as, expected_disassembly);
   uint64_t (*hash)(const void*, size_t) = reinterpret_cast<uint64_t (*)(const void*, size_t)>(function);
 

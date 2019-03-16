@@ -1,0 +1,9 @@
+amd64lib is an assembler and disassembler library for the AMD64 architecture.
+
+To generate code, use an AMD64Assembler object and call the various write
+functions on it.
+
+To disassemble code, call the static function AMD64Assembler::disassemble.
+
+This library depends on phosg (https://www.github.com/fuzziqersoftware/phosg).
+Build and install phosg, then run `make && sudo make install` in this directory.

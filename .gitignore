@@ -1,0 +1,6 @@
+.DS_Store
+AMD64AssemblerTest
+amd64asm
+amd64dasm
+libamd64.a
+*.o

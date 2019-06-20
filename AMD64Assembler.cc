@@ -1574,6 +1574,28 @@ void AMD64Assembler::write_dec(const MemoryReference& target,
   this->write_rm(op, target, 1, size);
 }
 
+void AMD64Assembler::write_imul_imm(Register target, const MemoryReference& mem,
+    int64_t scale, OperandSize size) {
+  if (size == OperandSize::Byte) {
+    throw invalid_argument("imul_imm cannot be used with byte operands");
+  }
+  if ((scale < -0x80000000LL) || (scale > 0x7FFFFFFFLL)) {
+    throw invalid_argument("immediate value out of range");
+  }
+
+  Operation op = (size == OperandSize::Byte) ? Operation::IMUL_IMM8 : Operation::IMUL_IMM32;
+  string data = this->generate_rm(op, mem, target, size);
+
+  if (size == OperandSize::Byte) {
+    data += static_cast<uint8_t>(scale);
+  } else if (size == OperandSize::Word) {
+    data.append(reinterpret_cast<const char*>(&scale), 2);
+  } else {
+    data.append(reinterpret_cast<const char*>(&scale), 4);
+  }
+  this->write(data);
+}
+
 void AMD64Assembler::write_imul(Register target, const MemoryReference& mem,
     OperandSize size) {
   if (size == OperandSize::Byte) {
@@ -2267,6 +2289,13 @@ string AMD64Assembler::disassemble(const void* vdata, size_t size,
             (value < 0) ? "-" : "", (value < 0) ? -value : value);
         offset += 4;
       }
+
+    } else if ((opcode == 0x69) || (opcode == 0x6B)) {
+      opcode_text = AMD64Assembler::disassemble_rm(data, size, offset, "imul",
+          true, NULL, ext, reg_ext, base_ext, index_ext, operand_size);
+      opcode_text += ", ";
+      opcode_text += AMD64Assembler::disassemble_imm(data, size, offset,
+          (opcode == 0x6B) ? OperandSize::Byte : operand_size);
 
     } else if (opcode == 0x6A) {
       if (offset >= size) {

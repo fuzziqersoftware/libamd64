@@ -58,7 +58,9 @@ enum Operation {
   REX_WRXB   = 0x4F,
   OPERAND16  = 0x66,
   PUSH32     = 0x68,
+  IMUL_IMM32 = 0x69,
   PUSH8      = 0x6A,
+  IMUL_IMM8  = 0x6B,
   JO8        = 0x70,
   JNO8       = 0x71,
   JB8        = 0x72,
@@ -656,6 +658,8 @@ public:
 
   void write_imul(Register to, const MemoryReference& from,
       OperandSize size = OperandSize::QuadWord);
+  void write_imul_imm(Register target, const MemoryReference& mem,
+      int64_t scale, OperandSize size = OperandSize::QuadWord);
   void write_mul(const MemoryReference& mem,
       OperandSize size = OperandSize::QuadWord);
   void write_imul(const MemoryReference& mem,

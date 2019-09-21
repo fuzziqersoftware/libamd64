@@ -38,6 +38,6 @@ test: AMD64AssemblerTest
 	./AMD64AssemblerTest
 
 clean:
-	rm -rf *.dSYM *.o gmon.out libphosg.a jsonformat *Test
+	rm -rf *.dSYM *.o gmon.out libamd64.a amd64asm amd64dasm *Test
 
 .PHONY: clean

@@ -574,6 +574,9 @@ static void assemble_line(AMD64Assembler& as, const string& raw_line) {
       // ignore these; all symbols are exported to the caller
     } else if (!line.compare(0, 13, ".intel_syntax", 13)) {
       // ignore this; we always use intel syntax
+    } else if (!line.compare(0, 6, ".data ", 6)) {
+      string parsed_data = parse_data_string(line.substr(6));
+      as.write_raw(parsed_data);
     } else {
       throw invalid_argument("unknown directive: " + line);
     }

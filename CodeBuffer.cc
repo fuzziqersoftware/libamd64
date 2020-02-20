@@ -65,6 +65,13 @@ void* CodeBuffer::overwrite(void* where, const void* data, size_t size,
   return block->overwrite(where_addr - block_addr, data, size, patch_offsets);
 }
 
+void CodeBuffer::clear() {
+  this->free_bytes_to_block.clear();
+  this->addr_to_block.clear();
+  this->size = 0;
+  this->used_bytes = 0;
+}
+
 size_t CodeBuffer::total_size() const {
   return this->size;
 }

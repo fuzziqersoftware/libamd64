@@ -24,6 +24,8 @@ public:
   void* overwrite(void* where, const void* data, size_t size,
       const std::unordered_set<size_t>* patch_offsets = NULL);
 
+  void clear();
+
   size_t total_size() const;
   size_t total_used_bytes() const;
 

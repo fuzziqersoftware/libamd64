@@ -372,6 +372,63 @@ unordered_multimap<string, InstructionAssemblyDefinition> assembly_definitions({
     as.write_sar(args[0].reference, args[1].value, size);
   }}},
 
+  {"rol", {{ArgType::MemoryReference, ArgType::MemoryReference}, all_sizes, handler_t {
+    if (args[1].reference.base_register != Register::CL ||
+        args[1].reference.field_size != 0 ||
+        args[1].reference.offset != 0) {
+      throw invalid_argument("shift amount must be specified in cl");
+    }
+    as.write_rol_cl(args[0].reference, size);
+  }}},
+  {"ror", {{ArgType::MemoryReference, ArgType::MemoryReference}, all_sizes, handler_t {
+    if (args[1].reference.base_register != Register::CL ||
+        args[1].reference.field_size != 0 ||
+        args[1].reference.offset != 0) {
+      throw invalid_argument("shift amount must be specified in cl");
+    }
+    as.write_ror_cl(args[0].reference, size);
+  }}},
+  {"rcl", {{ArgType::MemoryReference, ArgType::MemoryReference}, all_sizes, handler_t {
+    if (args[1].reference.base_register != Register::CL ||
+        args[1].reference.field_size != 0 ||
+        args[1].reference.offset != 0) {
+      throw invalid_argument("shift amount must be specified in cl");
+    }
+    as.write_rcl_cl(args[0].reference, size);
+  }}},
+  {"rcr", {{ArgType::MemoryReference, ArgType::MemoryReference}, all_sizes, handler_t {
+    if (args[1].reference.base_register != Register::CL ||
+        args[1].reference.field_size != 0 ||
+        args[1].reference.offset != 0) {
+      throw invalid_argument("shift amount must be specified in cl");
+    }
+    as.write_rcr_cl(args[0].reference, size);
+  }}},
+  {"shl", {{ArgType::MemoryReference, ArgType::MemoryReference}, all_sizes, handler_t {
+    if (args[1].reference.base_register != Register::CL ||
+        args[1].reference.field_size != 0 ||
+        args[1].reference.offset != 0) {
+      throw invalid_argument("shift amount must be specified in cl");
+    }
+    as.write_shl_cl(args[0].reference, size);
+  }}},
+  {"shr", {{ArgType::MemoryReference, ArgType::MemoryReference}, all_sizes, handler_t {
+    if (args[1].reference.base_register != Register::CL ||
+        args[1].reference.field_size != 0 ||
+        args[1].reference.offset != 0) {
+      throw invalid_argument("shift amount must be specified in cl");
+    }
+    as.write_shr_cl(args[0].reference, size);
+  }}},
+  {"sar", {{ArgType::MemoryReference, ArgType::MemoryReference}, all_sizes, handler_t {
+    if (args[1].reference.base_register != Register::CL ||
+        args[1].reference.field_size != 0 ||
+        args[1].reference.offset != 0) {
+      throw invalid_argument("shift amount must be specified in cl");
+    }
+    as.write_sar_cl(args[0].reference, size);
+  }}},
+
   {"not", {{ArgType::MemoryReference}, all_sizes, handler_t {
     as.write_not(args[0].reference, size);
   }}},
@@ -390,6 +447,18 @@ unordered_multimap<string, InstructionAssemblyDefinition> assembly_definitions({
   }}},
   {"imul", {{ArgType::MemoryReference}, all_sizes, handler_t {
     as.write_imul(args[0].reference, size);
+  }}},
+  {"imul", {{ArgType::MemoryReference, ArgType::Constant}, all_sizes, handler_t {
+    if (args[0].reference.field_size != 0) {
+      throw invalid_argument("imul (imm) operand must be a register");
+    }
+    as.write_imul_imm(args[0].reference.base_register, args[0].reference, args[1].value, size);
+  }}},
+  {"imul", {{ArgType::MemoryReference, ArgType::MemoryReference, ArgType::Constant}, all_sizes, handler_t {
+    if (args[0].reference.field_size != 0) {
+      throw invalid_argument("imul (imm) first operand must be a register");
+    }
+    as.write_imul_imm(args[0].reference.base_register, args[1].reference, args[2].value, size);
   }}},
   {"div", {{ArgType::MemoryReference}, all_sizes, handler_t {
     as.write_div(args[0].reference, size);
@@ -623,8 +692,6 @@ static void assemble_line(AMD64Assembler& as, const string& raw_line) {
       arg.reference = MemoryReference(def.reg);
       if (size == OperandSize::Unknown) {
         size = def.size;
-      } else if (size != def.size) {
-        throw invalid_argument("conflicting operand sizes");
       }
 
     } catch (const out_of_range&) {

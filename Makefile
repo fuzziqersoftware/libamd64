@@ -1,9 +1,3 @@
-CXX=g++ -fPIC
-CXXLD=g++
-OBJECTS=CodeBuffer.o AMD64Assembler.o FileAssembler.o
-CXXFLAGS=-g -Wall -Werror -std=c++14 -I/opt/local/include
-LDFLAGS=-L/opt/local/lib -lphosg
-
 ifeq ($(shell uname -s),Darwin)
 	INSTALL_DIR=/opt/local
 	CXXFLAGS +=  -DMACOSX -mmacosx-version-min=10.11
@@ -11,6 +5,13 @@ else
 	INSTALL_DIR=/usr/local
 	CXXFLAGS +=  -DLINUX
 endif
+
+CXX=g++ -fPIC
+CXXLD=g++
+OBJECTS=CodeBuffer.o AMD64Assembler.o FileAssembler.o
+CXXFLAGS=-g -Wall -Werror -std=c++14 -I$(INSTALL_DIR)/include
+LDFLAGS=-L$(INSTALL_DIR)/lib
+LIBS=-lphosg
 
 all: libamd64.a amd64dasm amd64asm test
 

@@ -103,7 +103,7 @@ void test_trivial_function() {
 void test_jump_boundaries() {
   printf("-- jump boundaries\n");
 
-  for (size_t x = 0x70; x < 0x90; x++) {
+  for (int64_t x = 0x70; x < 0x90; x++) {
     AMD64Assembler as;
     CodeBuffer code;
 

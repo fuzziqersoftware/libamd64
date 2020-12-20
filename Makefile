@@ -11,7 +11,7 @@ CXXLD=g++
 OBJECTS=CodeBuffer.o AMD64Assembler.o FileAssembler.o
 CXXFLAGS=-g -Wall -Werror -std=c++14 -I$(INSTALL_DIR)/include
 LDFLAGS=-L$(INSTALL_DIR)/lib
-LIBS=-lphosg
+LIBS=-lphosg -lpthread
 
 all: libamd64.a amd64dasm amd64asm test
 
